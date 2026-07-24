@@ -1,0 +1,211 @@
+import { useEffect, useState } from "react";
+import { Loader2, AlertCircle, Zap, ListFilter, Search } from "lucide-react";
+import ClipCard from "../components/ClipCard";
+import QueryInput from "../components/QueryInput";
+import TraceViewer from "../components/TraceViewer";
+import { getClips, searchClips } from "../lib/api";
+import { CATEGORIES } from "../lib/format";
+
+function normalizeBrowseClip(c) {
+  return {
+    lessonName: c.lessonName,
+    startTime: c.startTime,
+    endTime: c.endTime,
+    category: c.category,
+    confidence: c.categoryConfidence,
+    reason: c.categoryReason,
+    sourceType: c.sourceType,
+  };
+}
+
+function normalizeSearchClip(c) {
+  return {
+    lessonName: c.lessonName,
+    startTime: c.startTime,
+    endTime: c.endTime,
+    category: c.category,
+    confidence: undefined,
+    reason: c.pitch,
+    sourceType: c.sourceType,
+  };
+}
+
+export default function ClipsView({ command, onHistoryEntry }) {
+  const [mode, setMode] = useState("browse"); // "browse" | "search"
+
+  // Browse mode state
+  const [category, setCategory] = useState("all");
+  const [minConfidence, setMinConfidence] = useState(0);
+  const [browseResults, setBrowseResults] = useState([]);
+  const [browseLoading, setBrowseLoading] = useState(false);
+  const [browseError, setBrowseError] = useState(null);
+
+  // Search mode state
+  const [searchResult, setSearchResult] = useState(null);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [searchError, setSearchError] = useState(null);
+  const [traceOpen, setTraceOpen] = useState(false);
+
+  async function applyFilters() {
+    setBrowseLoading(true);
+    setBrowseError(null);
+    try {
+      const results = await getClips({ category, minConfidence, limit: 20 });
+      setBrowseResults(results);
+    } catch (err) {
+      setBrowseError(err.message);
+    } finally {
+      setBrowseLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    applyFilters();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  async function runSearch(query) {
+    setMode("search");
+    setSearchLoading(true);
+    setSearchError(null);
+    setSearchResult(null);
+    try {
+      const clip = await searchClips(query);
+      setSearchResult(clip);
+      onHistoryEntry({ id: Date.now(), type: "clip", query, timestamp: Date.now(), response: clip.pitch, trace: clip.trace });
+    } catch (err) {
+      setSearchError(err.message);
+    } finally {
+      setSearchLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    if (command) runSearch(command.query);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [command?.nonce]);
+
+  return (
+    <div className="flex h-full">
+      <div className="flex min-w-0 flex-1 flex-col overflow-y-auto">
+        <div className="flex items-center gap-2 border-b border-border-soft px-4 py-2">
+          <button
+            onClick={() => setMode("browse")}
+            className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
+              mode === "browse" ? "bg-accent-soft text-accent" : "text-ink-muted hover:text-ink"
+            }`}
+          >
+            <ListFilter size={13} />
+            Browse
+          </button>
+          <button
+            onClick={() => setMode("search")}
+            className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
+              mode === "search" ? "bg-accent-soft text-accent" : "text-ink-muted hover:text-ink"
+            }`}
+          >
+            <Search size={13} />
+            Search
+          </button>
+        </div>
+
+        {mode === "browse" ? (
+          <>
+            <div className="flex flex-wrap items-end gap-4 border-b border-border-soft px-4 py-3">
+              <label className="flex flex-col gap-1 text-xs text-ink-muted">
+                Category
+                <select
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  className="rounded-md border border-border bg-surface-raised px-2 py-1.5 text-sm text-ink outline-none"
+                >
+                  <option value="all">All</option>
+                  {CATEGORIES.map((c) => (
+                    <option key={c} value={c}>
+                      {c[0].toUpperCase() + c.slice(1)}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label className="flex flex-col gap-1 text-xs text-ink-muted">
+                Min confidence: <span className="text-ink">{minConfidence}</span>
+                <input
+                  type="range"
+                  min={0}
+                  max={10}
+                  value={minConfidence}
+                  onChange={(e) => setMinConfidence(Number(e.target.value))}
+                  className="w-40 accent-accent"
+                />
+              </label>
+
+              <button
+                onClick={applyFilters}
+                className="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-canvas transition-opacity hover:opacity-90"
+              >
+                Apply filters
+              </button>
+            </div>
+
+            <div className="flex-1 p-4">
+              {browseLoading && (
+                <div className="flex items-center gap-2 text-sm text-ink-faint">
+                  <Loader2 size={14} className="animate-spin" /> Loading clips…
+                </div>
+              )}
+              {browseError && (
+                <div className="flex items-center gap-2 text-sm text-cat-controversial">
+                  <AlertCircle size={14} /> {browseError}
+                </div>
+              )}
+              {!browseLoading && !browseError && browseResults.length === 0 && (
+                <p className="text-sm text-ink-faint">No clips match these filters.</p>
+              )}
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                {browseResults.map((c) => (
+                  <ClipCard key={c.id} clip={normalizeBrowseClip(c)} />
+                ))}
+              </div>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="flex-1 p-4">
+              {searchLoading && (
+                <div className="flex items-center gap-2 text-sm text-ink-faint">
+                  <Loader2 size={14} className="animate-spin" /> Finding the best clip…
+                </div>
+              )}
+              {searchError && (
+                <div className="flex items-center gap-2 text-sm text-cat-controversial">
+                  <AlertCircle size={14} /> {searchError}
+                </div>
+              )}
+              {!searchLoading && !searchError && !searchResult && (
+                <p className="text-sm text-ink-faint">Describe the kind of moment you're looking for.</p>
+              )}
+              {searchResult && (
+                <div className="max-w-md">
+                  <ClipCard clip={normalizeSearchClip(searchResult)} />
+                  <button
+                    onClick={() => setTraceOpen((o) => !o)}
+                    className="mt-2 flex items-center gap-1 text-xs font-medium text-ink-faint transition-colors hover:text-accent"
+                  >
+                    <Zap size={12} />
+                    {traceOpen ? "Hide reasoning trace" : "View reasoning trace"}
+                  </button>
+                </div>
+              )}
+            </div>
+            <QueryInput placeholder="Find a clip about..." onSubmit={runSearch} disabled={searchLoading} />
+          </>
+        )}
+      </div>
+
+      {mode === "search" && traceOpen && (
+        <TraceViewer trace={searchResult?.trace ?? []} onClose={() => setTraceOpen(false)} />
+      )}
+    </div>
+  );
+}

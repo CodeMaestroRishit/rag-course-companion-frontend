@@ -34,19 +34,23 @@ cp .env.example .env   # set VITE_API_URL - see below
 npm run dev
 ```
 
-Requires the backend (`server.js`), Chroma, and ingested data to already be
-running — see the parent project's `README.md`. Without a reachable backend,
-the layout renders fine but every request shows an inline error state.
+Requires the backend, Chroma, and ingested data to already be running — see
+[rag-course-companion](https://github.com/CodeMaestroRishit/rag-course-companion).
+Without a reachable backend, the layout renders fine but every request shows
+an inline error state.
 
 ## Deploying to Vercel
 
 This is a static Vite build, which is exactly what Vercel is for (unlike the
-backend — see the parent `README.md` for why that goes on Render instead):
+backend, which lives in its own repo and deploys to Render instead — see
+[rag-course-companion](https://github.com/CodeMaestroRishit/rag-course-companion)):
 
-1. Push this repo to GitHub/GitLab.
-2. In Vercel: **Add New** → **Project**, import the repo, set **Root
-   Directory** to `frontend/` (Vercel auto-detects the Vite framework preset
-   — no `vercel.json` needed for a single-page app like this one).
+1. This repo ([rag-course-companion-frontend](https://github.com/CodeMaestroRishit/rag-course-companion-frontend))
+   is already on GitHub.
+2. In Vercel: **Add New** → **Project**, import the repo (Vercel
+   auto-detects the Vite framework preset — no `vercel.json` needed for a
+   single-page app like this one; no Root Directory override needed either,
+   since this repo *is* the frontend now rather than a subfolder of it).
 3. Add an environment variable: `VITE_API_URL` = your deployed Render backend
    URL (e.g. `https://rag-course-companion.onrender.com`). It must be set
    *before* the build, since Vite inlines `import.meta.env.VITE_API_URL` at

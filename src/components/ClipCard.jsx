@@ -24,31 +24,33 @@ export default function ClipCard({ clip }) {
 
   return (
     <div
-      className="flex flex-col gap-2 rounded-lg border border-border bg-surface p-4"
-      style={{ borderLeft: `3px solid ${color}` }}
+      className="flex flex-col gap-3 rounded-xl border border-border bg-surface p-5 shadow-md transition-shadow hover:shadow-lg"
+      style={{ borderLeft: `4px solid ${color}` }}
     >
       <div className="flex items-start justify-between gap-2">
-        <p className="text-sm font-medium text-ink">{clip.lessonName}</p>
+        <p className="text-base font-semibold text-ink">{clip.lessonName}</p>
         <span
-          className="flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold tracking-wide"
+          className="flex shrink-0 items-center gap-1 rounded-full px-2.5 py-1 text-xs font-bold tracking-wide"
           style={{ color, backgroundColor: `${color}22` }}
         >
-          <span aria-hidden>{emoji}</span>
+          <span aria-hidden className="text-sm">
+            {emoji}
+          </span>
           {clip.category.toUpperCase()}
           {clip.confidence !== undefined ? ` · ${clip.confidence}/10` : ""}
         </span>
       </div>
 
-      <p className="line-clamp-3 text-sm text-ink-muted">{clip.reason}</p>
+      <p className="line-clamp-3 text-sm leading-relaxed text-ink-muted">{clip.reason}</p>
 
       <div className="mt-1 flex items-center justify-between">
-        <span className="flex items-center gap-1 text-xs text-ink-faint">
-          {isPdf ? <FileText size={12} /> : <Clock size={12} />}
+        <span className="flex items-center gap-1.5 text-xs font-medium text-ink-faint">
+          {isPdf ? <FileText size={13} /> : <Clock size={13} />}
           {range}
         </span>
         <button
           onClick={copyRange}
-          className="flex items-center gap-1 rounded-md border border-border px-2 py-1 text-xs font-medium text-ink-muted transition-colors hover:border-accent-border hover:text-accent"
+          className="flex items-center gap-1 rounded-md border border-border px-2.5 py-1.5 text-xs font-medium text-ink-muted transition-colors hover:border-accent-border hover:text-accent"
         >
           {copied ? <Check size={12} /> : <Copy size={12} />}
           {copied ? "Copied" : copyLabel}

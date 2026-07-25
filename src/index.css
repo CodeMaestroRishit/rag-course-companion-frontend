@@ -3,40 +3,41 @@
 @theme {
   --font-sans: "Inter", system-ui, "Segoe UI", Roboto, sans-serif;
 
-  /* Base surfaces, darkest to lightest */
-  --color-canvas: #0b0d12;
-  --color-surface: #12151c;
-  --color-surface-raised: #191d26;
-  --color-border: #262b36;
-  --color-border-soft: #1c202a;
+  /* Base surfaces, warm and light (Claude-style cream palette) - brightened */
+  --color-canvas: #faf9f5;
+  --color-surface: #ffffff;
+  --color-surface-raised: #f3f1e9;
+  --color-border: #e5e1d3;
+  --color-border-soft: #eeebe0;
 
   /* Text */
-  --color-ink: #e8eaf0;
-  --color-ink-muted: #9aa3b2;
-  --color-ink-faint: #5b6472;
+  --color-ink: #24231f;
+  --color-ink-muted: #6b6659;
+  --color-ink-faint: #9c9787;
 
-  /* Accent: amber, used for citations/highlights (the "marker on a dark board" accent) */
-  --color-accent: #f2b544;
-  --color-accent-soft: #f2b54426;
-  --color-accent-border: #f2b5454d;
+  /* Accent: warm terracotta, used for citations/highlights */
+  --color-accent: #d97757;
+  --color-accent-soft: #d977572a;
+  --color-accent-border: #d9775766;
+  --color-on-accent: #fffdfb;
 
   /* Category colors */
-  --color-cat-funny: #f2b544;
-  --color-cat-insightful: #a78bfa;
-  --color-cat-controversial: #fb7185;
-  --color-cat-emotional: #f472b6;
-  --color-cat-informative: #60a5fa;
-  --color-cat-none: #6b7280;
+  --color-cat-funny: #d97706;
+  --color-cat-insightful: #7c3aed;
+  --color-cat-controversial: #e11d48;
+  --color-cat-emotional: #db2777;
+  --color-cat-informative: #2563eb;
+  --color-cat-none: #78716c;
 
   /* Trace node colors */
-  --color-node-transform: #9ca3af;
-  --color-node-retrieve: #60a5fa;
-  --color-node-merge: #22d3ee;
-  --color-node-rerank: #818cf8;
-  --color-node-generate: #a78bfa;
-  --color-node-grade: #f2b544;
-  --color-node-retry: #fb923c;
-  --color-node-guardrail: #4ade80;
+  --color-node-transform: #78716c;
+  --color-node-retrieve: #2563eb;
+  --color-node-merge: #0891b2;
+  --color-node-rerank: #6366f1;
+  --color-node-generate: #7c3aed;
+  --color-node-grade: #cc785c;
+  --color-node-retry: #ea580c;
+  --color-node-guardrail: #16a34a;
 }
 
 html,
@@ -66,4 +67,18 @@ body {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-ink-faint);
+}
+
+/* Draws attention to "Show trace" once a fresh trace is ready to view. */
+@keyframes shine-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 var(--color-accent-soft);
+  }
+  50% {
+    box-shadow: 0 0 0 6px var(--color-accent-soft);
+  }
+}
+.shine {
+  animation: shine-pulse 1.8s ease-in-out infinite;
 }

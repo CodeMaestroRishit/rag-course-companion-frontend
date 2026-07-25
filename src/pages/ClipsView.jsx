@@ -89,23 +89,23 @@ export default function ClipsView({ command, onHistoryEntry }) {
   return (
     <div className="flex h-full">
       <div className="flex min-w-0 flex-1 flex-col overflow-y-auto">
-        <div className="flex items-center gap-2 border-b border-border-soft px-4 py-2">
+        <div className="flex items-center gap-2 border-b border-border-soft px-4 py-3">
           <button
             onClick={() => setMode("browse")}
-            className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
-              mode === "browse" ? "bg-accent-soft text-accent" : "text-ink-muted hover:text-ink"
+            className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-semibold transition-colors ${
+              mode === "browse" ? "bg-accent-soft text-accent shadow-sm" : "text-ink-muted hover:text-ink"
             }`}
           >
-            <ListFilter size={13} />
+            <ListFilter size={15} />
             Browse
           </button>
           <button
             onClick={() => setMode("search")}
-            className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
-              mode === "search" ? "bg-accent-soft text-accent" : "text-ink-muted hover:text-ink"
+            className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-semibold transition-colors ${
+              mode === "search" ? "bg-accent-soft text-accent shadow-sm" : "text-ink-muted hover:text-ink"
             }`}
           >
-            <Search size={13} />
+            <Search size={15} />
             Search
           </button>
         </div>
@@ -162,7 +162,7 @@ export default function ClipsView({ command, onHistoryEntry }) {
 
               <button
                 onClick={applyFilters}
-                className="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-canvas transition-opacity hover:opacity-90"
+                className="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-on-accent transition-opacity hover:opacity-90"
               >
                 Apply filters
               </button>
@@ -182,7 +182,7 @@ export default function ClipsView({ command, onHistoryEntry }) {
               {!browseLoading && !browseError && browseResults.length === 0 && (
                 <p className="text-sm text-ink-faint">No clips match these filters.</p>
               )}
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
                 {browseResults.map((c) => (
                   <ClipCard key={c.id} clip={normalizeBrowseClip(c)} />
                 ))}
@@ -206,7 +206,7 @@ export default function ClipsView({ command, onHistoryEntry }) {
                 <p className="text-sm text-ink-faint">Describe the kind of moment you're looking for.</p>
               )}
               {searchResult && (
-                <div className="max-w-md">
+                <div className="max-w-lg">
                   <ClipCard clip={normalizeSearchClip(searchResult)} />
                   <button
                     onClick={() => setTraceOpen((o) => !o)}

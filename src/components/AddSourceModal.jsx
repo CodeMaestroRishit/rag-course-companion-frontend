@@ -4,7 +4,7 @@ import { uploadVttSource, uploadPdfSource, ingestYoutubeSource } from "../lib/ap
 
 const SOURCE_TYPES = [
   { id: "pdf", label: "PDF", icon: FileText, live: true },
-  { id: "yt", label: "YouTube Link", icon: SquarePlay, live: true },
+  { id: "yt", label: "YouTube Link", icon: SquarePlay, live: false },
   { id: "web", label: "Web Link", icon: Globe, live: false },
   { id: "text", label: "Text", icon: Type, live: false },
   { id: "vtt", label: "VTT / SRT", icon: Captions, live: true },
@@ -71,7 +71,7 @@ function VttForm({ onIngested }) {
       <button
         onClick={submit}
         disabled={!file || !lessonName.trim() || status?.state === "loading"}
-        className="rounded-lg bg-accent px-3 py-2 text-sm font-medium text-canvas transition-opacity disabled:opacity-40"
+        className="rounded-lg bg-accent px-3 py-2 text-sm font-medium text-on-accent transition-opacity disabled:opacity-40"
       >
         Ingest subtitle file
       </button>
@@ -115,7 +115,7 @@ function PdfForm({ onIngested }) {
       <button
         onClick={submit}
         disabled={!file || !docName.trim() || status?.state === "loading"}
-        className="rounded-lg bg-accent px-3 py-2 text-sm font-medium text-canvas transition-opacity disabled:opacity-40"
+        className="rounded-lg bg-accent px-3 py-2 text-sm font-medium text-on-accent transition-opacity disabled:opacity-40"
       >
         Ingest PDF
       </button>
@@ -163,7 +163,7 @@ function YoutubeForm({ onIngested }) {
       <button
         onClick={submit}
         disabled={!url.trim() || status?.state === "loading"}
-        className="rounded-lg bg-accent px-3 py-2 text-sm font-medium text-canvas transition-opacity disabled:opacity-40"
+        className="rounded-lg bg-accent px-3 py-2 text-sm font-medium text-on-accent transition-opacity disabled:opacity-40"
       >
         Ingest YouTube video
       </button>
@@ -217,7 +217,7 @@ export default function AddSourceModal({ onClose, onIngested }) {
         )}
         {selected === "vtt" && <VttForm onIngested={onIngested} />}
         {selected === "pdf" && <PdfForm onIngested={onIngested} />}
-        {selected === "yt" && <YoutubeForm onIngested={onIngested} />}
+        {selected === "yt" && selectedType.live && <YoutubeForm onIngested={onIngested} />}
       </div>
     </div>
   );

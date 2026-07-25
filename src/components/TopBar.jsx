@@ -1,4 +1,5 @@
-import { Plus, GraduationCap, PanelLeft, History } from "lucide-react";
+import { Plus, PanelLeft, History } from "lucide-react";
+import Logo from "./Logo";
 
 export default function TopBar({ onAddSource, sourcesOpen, onToggleSources, historyOpen, onToggleHistory }) {
   return (
@@ -14,9 +15,9 @@ export default function TopBar({ onAddSource, sourcesOpen, onToggleSources, hist
           <PanelLeft size={17} />
         </button>
         <div className="flex items-center gap-2">
-          <GraduationCap size={20} className="text-accent" />
-          <span className="font-semibold">Course Companion</span>
-          <span className="hidden text-sm text-ink-faint sm:inline">RAG over your lesson transcripts</span>
+          <Logo size={22} className="text-accent" />
+          <span className="text-[17px] font-bold tracking-tight">SeekPoint</span>
+          <span className="hidden text-sm text-ink-faint sm:inline">Find the exact moment.</span>
         </div>
       </div>
       <div className="flex items-center gap-2">

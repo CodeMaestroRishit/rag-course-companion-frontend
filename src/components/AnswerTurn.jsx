@@ -9,15 +9,15 @@ export default function AnswerTurn({ turn, onViewTrace, isActiveTrace }) {
   const sources = turn.sources?.filter((s) => s.text) ?? [];
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-4">
       <div className="flex justify-end">
-        <div className="max-w-[80%] rounded-2xl rounded-br-sm bg-surface-raised px-4 py-2 text-sm text-ink">
+        <div className="max-w-[80%] rounded-2xl rounded-br-sm bg-surface-raised px-4 py-2.5 text-[15px] text-ink shadow-sm">
           {turn.query}
         </div>
       </div>
 
       <div className="flex justify-start">
-        <div className="max-w-[85%] rounded-2xl rounded-bl-sm border border-border bg-surface px-4 py-3">
+        <div className="max-w-[90%] rounded-2xl rounded-bl-sm border border-border bg-surface px-5 py-4 shadow-md">
           {turn.loading && (
             <div className="flex items-center gap-2 text-sm text-ink-faint">
               <Loader2 size={14} className="animate-spin" />
@@ -34,9 +34,9 @@ export default function AnswerTurn({ turn, onViewTrace, isActiveTrace }) {
 
           {turn.response && (
             <>
-              <p className="text-sm leading-relaxed whitespace-pre-wrap text-ink">{turn.response}</p>
+              <p className="text-[15px] leading-relaxed whitespace-pre-wrap text-ink">{turn.response}</p>
               {citations.length > 0 && (
-                <div className="mt-3 flex flex-wrap gap-1.5">
+                <div className="mt-4 flex flex-wrap gap-2">
                   {citations.map((c, i) => (
                     <CitationPill key={i} lessonName={c.lessonName} locator={c.locator} />
                   ))}

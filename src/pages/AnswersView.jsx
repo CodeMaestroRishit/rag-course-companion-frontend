@@ -38,6 +38,7 @@ export default function AnswersView({ command, onHistoryEntry }) {
 
   const isLoading = turns.some((t) => t.loading);
   const activeTrace = turns.find((t) => t.id === activeTraceTurnId)?.trace ?? null;
+  const traceReadyUnseen = !traceOpen && activeTrace && activeTrace.length > 0;
 
   return (
     <div className="flex h-full">
@@ -49,7 +50,9 @@ export default function AnswersView({ command, onHistoryEntry }) {
             className={`flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs font-medium transition-colors ${
               traceOpen
                 ? "border-accent-border bg-accent-soft text-accent"
-                : "border-border text-ink-muted hover:text-ink"
+                : traceReadyUnseen
+                  ? "border-accent-border bg-accent-soft text-accent shine"
+                  : "border-border text-ink-muted hover:text-ink"
             }`}
           >
             <Zap size={13} />

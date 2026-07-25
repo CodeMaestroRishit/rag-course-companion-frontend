@@ -1,7 +1,8 @@
-# RAG course companion — frontend
+# SeekPoint — frontend
 
-React + Vite + Tailwind CSS UI for the backend at `../server.js`. Talks to it
-over plain `fetch` (no axios).
+"Find the exact moment." React + Vite + Tailwind CSS UI for the SeekPoint
+backend (see [rag-course-companion](https://github.com/CodeMaestroRishit/rag-course-companion)).
+Talks to it over plain `fetch` (no axios).
 
 ## What it does
 

@@ -33,7 +33,7 @@ export default function QueryInput({ placeholder, onSubmit, disabled, value }) {
       <button
         onClick={submit}
         disabled={disabled || !text.trim()}
-        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-accent text-canvas transition-opacity disabled:opacity-40"
+        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-accent text-on-accent transition-opacity disabled:opacity-40"
       >
         <ArrowUp size={18} />
       </button>

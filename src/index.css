@@ -3,23 +3,24 @@
 @theme {
   --font-sans: "Inter", system-ui, "Segoe UI", Roboto, sans-serif;
 
-  /* Base surfaces, warm and light (Claude-style cream palette) - brightened */
-  --color-canvas: #faf9f5;
-  --color-surface: #ffffff;
-  --color-surface-raised: #f3f1e9;
-  --color-border: #e5e1d3;
-  --color-border-soft: #eeebe0;
+  /* Base surfaces: warm cream, pulled back from stark-bright white */
+  --color-canvas: #f2ecdd;
+  --color-surface: #fffdf9;
+  --color-surface-raised: #ece4d0;
+  --color-border: #ddd2b6;
+  --color-border-soft: #e7dfc9;
 
   /* Text */
   --color-ink: #24231f;
   --color-ink-muted: #6b6659;
   --color-ink-faint: #9c9787;
 
-  /* Accent: warm terracotta, used for citations/highlights */
-  --color-accent: #d97757;
-  --color-accent-soft: #d977572a;
-  --color-accent-border: #d9775766;
-  --color-on-accent: #fffdfb;
+  /* Accent: deep, saturated orange - the dominant brand color, not a pastel */
+  --color-accent: #c2410c;
+  --color-accent-hover: #a3350a;
+  --color-accent-soft: #c2410c26;
+  --color-accent-border: #c2410c70;
+  --color-on-accent: #fff8f2;
 
   /* Category colors */
   --color-cat-funny: #d97706;

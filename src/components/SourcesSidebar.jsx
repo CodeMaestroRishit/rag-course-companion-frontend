@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
-import { Plus, Library, FileText, SquarePlay, Loader2 } from "lucide-react";
-import { getSources } from "../lib/api";
+import { Plus, Library, FileText, SquarePlay, Loader2, Trash2 } from "lucide-react";
+import { getSources, deleteSource } from "../lib/api";
 
 export default function SourcesSidebar({ onAddSource, refreshKey }) {
   const [sources, setSources] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
 
-  useEffect(() => {
+  function load() {
     let cancelled = false;
     setLoading(true);
     getSources()
@@ -23,7 +24,22 @@ export default function SourcesSidebar({ onAddSource, refreshKey }) {
     return () => {
       cancelled = true;
     };
-  }, [refreshKey]);
+  }
+
+  useEffect(load, [refreshKey]);
+
+  async function handleDelete(source) {
+    if (!confirm(`Delete "${source.lessonName}" (${source.chunkCount} chunks)? This can't be undone.`)) return;
+    setDeletingId(source.sourceId);
+    try {
+      await deleteSource(source.sourceId);
+      setSources((prev) => prev.filter((s) => s.sourceId !== source.sourceId));
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setDeletingId(null);
+    }
+  }
 
   return (
     <aside className="flex w-64 shrink-0 flex-col border-r border-border bg-surface">
@@ -56,8 +72,12 @@ export default function SourcesSidebar({ onAddSource, refreshKey }) {
         <ul className="flex flex-col gap-0.5">
           {sources.map((s) => {
             const Icon = s.sourceType === "pdf" ? FileText : SquarePlay;
+            const isDeleting = deletingId === s.sourceId;
             return (
-              <li key={s.sourceId} className="flex items-start gap-2 rounded-md px-2 py-2 hover:bg-surface-raised">
+              <li
+                key={s.sourceId}
+                className="group flex items-start gap-2 rounded-md px-2 py-2 hover:bg-surface-raised"
+              >
                 <Icon size={14} className="mt-0.5 shrink-0 text-ink-faint" />
                 <div className="min-w-0 flex-1">
                   <p className="line-clamp-2 text-sm text-ink">{s.lessonName}</p>
@@ -65,6 +85,14 @@ export default function SourcesSidebar({ onAddSource, refreshKey }) {
                     {s.chunkCount} chunk{s.chunkCount === 1 ? "" : "s"}
                   </p>
                 </div>
+                <button
+                  onClick={() => handleDelete(s)}
+                  disabled={isDeleting}
+                  title={`Delete "${s.lessonName}"`}
+                  className="mt-0.5 shrink-0 rounded p-1 text-ink-faint opacity-0 transition-colors group-hover:opacity-100 hover:bg-cat-controversial/10 hover:text-cat-controversial disabled:opacity-100"
+                >
+                  {isDeleting ? <Loader2 size={13} className="animate-spin" /> : <Trash2 size={13} />}
+                </button>
               </li>
             );
           })}

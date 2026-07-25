@@ -24,6 +24,12 @@ export async function getSources() {
   return parseErrorOr(res);
 }
 
+/** DELETE /sources/:sourceId -> { success } */
+export async function deleteSource(sourceId) {
+  const res = await fetch(`${BASE_URL}/sources/${encodeURIComponent(sourceId)}`, { method: "DELETE" });
+  return parseErrorOr(res);
+}
+
 /** GET /clips?category=&minConfidence=&limit= -> ChunkMetadata[] */
 export async function getClips({ category, minConfidence, limit } = {}) {
   const params = new URLSearchParams();

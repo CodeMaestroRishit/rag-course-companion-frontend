@@ -1,9 +1,12 @@
-import { Zap, Loader2, AlertCircle } from "lucide-react";
+import { useState } from "react";
+import { Zap, Loader2, AlertCircle, Library, ChevronDown, Clock, FileText } from "lucide-react";
 import CitationPill from "./CitationPill";
 import { extractCitations } from "../lib/format";
 
 export default function AnswerTurn({ turn, onViewTrace, isActiveTrace }) {
+  const [sourcesOpen, setSourcesOpen] = useState(false);
   const citations = turn.response ? extractCitations(turn.response) : [];
+  const sources = turn.sources?.filter((s) => s.text) ?? [];
 
   return (
     <div className="flex flex-col gap-3">
@@ -39,16 +42,49 @@ export default function AnswerTurn({ turn, onViewTrace, isActiveTrace }) {
                   ))}
                 </div>
               )}
-              {turn.trace && (
-                <button
-                  onClick={() => onViewTrace(turn)}
-                  className={`mt-3 flex items-center gap-1 text-xs font-medium transition-colors ${
-                    isActiveTrace ? "text-accent" : "text-ink-faint hover:text-accent"
-                  }`}
-                >
-                  <Zap size={12} />
-                  {isActiveTrace ? "Viewing this trace" : "View reasoning trace"}
-                </button>
+              <div className="mt-3 flex items-center gap-3">
+                {turn.trace && (
+                  <button
+                    onClick={() => onViewTrace(turn)}
+                    className={`flex items-center gap-1 text-xs font-medium transition-colors ${
+                      isActiveTrace ? "text-accent" : "text-ink-faint hover:text-accent"
+                    }`}
+                  >
+                    <Zap size={12} />
+                    {isActiveTrace ? "Viewing this trace" : "View reasoning trace"}
+                  </button>
+                )}
+                {sources.length > 0 && (
+                  <button
+                    onClick={() => setSourcesOpen((o) => !o)}
+                    className={`flex items-center gap-1 text-xs font-medium transition-colors ${
+                      sourcesOpen ? "text-accent" : "text-ink-faint hover:text-accent"
+                    }`}
+                  >
+                    <Library size={12} />
+                    {sourcesOpen ? "Hide sources" : `Show sources (${sources.length})`}
+                    <ChevronDown size={12} className={`transition-transform ${sourcesOpen ? "rotate-180" : ""}`} />
+                  </button>
+                )}
+              </div>
+
+              {sourcesOpen && sources.length > 0 && (
+                <div className="mt-2 flex flex-col gap-2">
+                  {sources.map((s, i) => {
+                    const Icon = s.sourceType === "pdf" ? FileText : Clock;
+                    return (
+                      <div key={i} className="rounded-md border border-border-soft bg-surface-raised p-2.5">
+                        <div className="mb-1 flex items-center gap-1.5 text-xs font-medium text-accent">
+                          <Icon size={11} />
+                          {s.lessonName} · {s.locator}
+                        </div>
+                        <blockquote className="line-clamp-4 border-l-2 border-border pl-2 text-xs text-ink-muted">
+                          {s.text}
+                        </blockquote>
+                      </div>
+                    );
+                  })}
+                </div>
               )}
             </>
           )}

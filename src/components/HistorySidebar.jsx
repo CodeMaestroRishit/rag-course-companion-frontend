@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { History, MessageSquare, Film, RotateCcw } from "lucide-react";
+import { History, MessageSquare, Film, RotateCcw, X } from "lucide-react";
 
 const FILTERS = [
   { id: "all", label: "All" },
@@ -17,7 +17,7 @@ function relativeTime(ts) {
   return new Date(ts).toLocaleDateString();
 }
 
-export default function HistorySidebar({ history, onSelect }) {
+export default function HistorySidebar({ history, onSelect, onClose }) {
   const [filter, setFilter] = useState("all");
 
   const filtered = useMemo(() => {
@@ -27,10 +27,17 @@ export default function HistorySidebar({ history, onSelect }) {
   }, [history, filter]);
 
   return (
-    <aside className="flex w-64 shrink-0 flex-col border-r border-border bg-surface">
-      <div className="flex items-center gap-2 border-b border-border-soft px-3 py-3 text-sm font-semibold text-ink-muted">
-        <History size={15} />
-        History
+    <aside className="flex w-64 shrink-0 flex-col border-l border-border bg-surface">
+      <div className="flex items-center justify-between border-b border-border-soft px-3 py-3 text-sm font-semibold text-ink-muted">
+        <div className="flex items-center gap-2">
+          <History size={15} />
+          History
+        </div>
+        {onClose && (
+          <button onClick={onClose} className="rounded p-1 text-ink-faint hover:bg-surface-raised hover:text-ink">
+            <X size={15} />
+          </button>
+        )}
       </div>
 
       <div className="flex gap-1 border-b border-border-soft px-2 py-2">

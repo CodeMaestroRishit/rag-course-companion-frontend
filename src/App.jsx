@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import TopBar from "./components/TopBar";
 import BottomTabs from "./components/BottomTabs";
 import HistorySidebar from "./components/HistorySidebar";
+import SourcesSidebar from "./components/SourcesSidebar";
 import AddSourceModal from "./components/AddSourceModal";
 import AnswersView from "./pages/AnswersView";
 import ClipsView from "./pages/ClipsView";
@@ -19,6 +20,9 @@ function loadHistory() {
 export default function App() {
   const [activeTab, setActiveTab] = useState("answers");
   const [modalOpen, setModalOpen] = useState(false);
+  const [sourcesOpen, setSourcesOpen] = useState(true);
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const [sourcesRefresh, setSourcesRefresh] = useState(0);
   const [history, setHistory] = useState(loadHistory);
   const [answerCommand, setAnswerCommand] = useState(null);
   const [clipCommand, setClipCommand] = useState(null);
@@ -43,10 +47,18 @@ export default function App() {
 
   return (
     <div className="flex h-screen flex-col bg-canvas text-ink">
-      <TopBar onAddSource={() => setModalOpen(true)} />
+      <TopBar
+        onAddSource={() => setModalOpen(true)}
+        sourcesOpen={sourcesOpen}
+        onToggleSources={() => setSourcesOpen((o) => !o)}
+        historyOpen={historyOpen}
+        onToggleHistory={() => setHistoryOpen((o) => !o)}
+      />
 
       <div className="flex flex-1 overflow-hidden">
-        <HistorySidebar history={history} onSelect={handleSelectHistory} />
+        {sourcesOpen && (
+          <SourcesSidebar onAddSource={() => setModalOpen(true)} refreshKey={sourcesRefresh} />
+        )}
 
         <main className="min-w-0 flex-1 overflow-hidden">
           {activeTab === "answers" ? (
@@ -55,11 +67,20 @@ export default function App() {
             <ClipsView command={clipCommand} onHistoryEntry={addHistoryEntry} />
           )}
         </main>
+
+        {historyOpen && (
+          <HistorySidebar history={history} onSelect={handleSelectHistory} onClose={() => setHistoryOpen(false)} />
+        )}
       </div>
 
       <BottomTabs activeTab={activeTab} onChange={setActiveTab} />
 
-      {modalOpen && <AddSourceModal onClose={() => setModalOpen(false)} />}
+      {modalOpen && (
+        <AddSourceModal
+          onClose={() => setModalOpen(false)}
+          onIngested={() => setSourcesRefresh((n) => n + 1)}
+        />
+      )}
     </div>
   );
 }

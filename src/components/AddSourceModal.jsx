@@ -36,7 +36,7 @@ function StatusBanner({ status }) {
   );
 }
 
-function VttForm() {
+function VttForm({ onIngested }) {
   const [file, setFile] = useState(null);
   const [lessonName, setLessonName] = useState("");
   const [status, setStatus] = useState(null);
@@ -47,6 +47,7 @@ function VttForm() {
     try {
       const result = await uploadVttSource(file, lessonName.trim());
       setStatus({ state: "success", chunksIngested: result.chunksIngested });
+      onIngested();
     } catch (err) {
       setStatus({ state: "error", message: err.message });
     }
@@ -79,7 +80,7 @@ function VttForm() {
   );
 }
 
-function PdfForm() {
+function PdfForm({ onIngested }) {
   const [file, setFile] = useState(null);
   const [docName, setDocName] = useState("");
   const [status, setStatus] = useState(null);
@@ -90,6 +91,7 @@ function PdfForm() {
     try {
       const result = await uploadPdfSource(file, docName.trim());
       setStatus({ state: "success", chunksIngested: result.chunksIngested });
+      onIngested();
     } catch (err) {
       setStatus({ state: "error", message: err.message });
     }
@@ -125,7 +127,7 @@ function PdfForm() {
   );
 }
 
-function YoutubeForm() {
+function YoutubeForm({ onIngested }) {
   const [url, setUrl] = useState("");
   const [lessonName, setLessonName] = useState("");
   const [status, setStatus] = useState(null);
@@ -136,6 +138,7 @@ function YoutubeForm() {
     try {
       const result = await ingestYoutubeSource(url.trim(), lessonName.trim() || undefined);
       setStatus({ state: "success", chunksIngested: result.chunksIngested });
+      onIngested();
     } catch (err) {
       setStatus({ state: "error", message: err.message });
     }
@@ -172,7 +175,7 @@ function YoutubeForm() {
   );
 }
 
-export default function AddSourceModal({ onClose }) {
+export default function AddSourceModal({ onClose, onIngested }) {
   const [selected, setSelected] = useState(null);
   const selectedType = SOURCE_TYPES.find((s) => s.id === selected);
 
@@ -212,9 +215,9 @@ export default function AddSourceModal({ onClose }) {
             lessons via the CLI: <code className="rounded bg-surface-raised px-1 py-0.5 text-xs">node ingest.js</code>.
           </div>
         )}
-        {selected === "vtt" && <VttForm />}
-        {selected === "pdf" && <PdfForm />}
-        {selected === "yt" && <YoutubeForm />}
+        {selected === "vtt" && <VttForm onIngested={onIngested} />}
+        {selected === "pdf" && <PdfForm onIngested={onIngested} />}
+        {selected === "yt" && <YoutubeForm onIngested={onIngested} />}
       </div>
     </div>
   );

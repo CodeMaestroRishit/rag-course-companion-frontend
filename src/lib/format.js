@@ -16,6 +16,15 @@ export const CATEGORY_COLORS = {
   none: "var(--color-cat-none)",
 };
 
+export const CATEGORY_EMOJI = {
+  funny: "😂",
+  insightful: "💡",
+  controversial: "🔥",
+  emotional: "❤️",
+  informative: "📘",
+  none: "⚪",
+};
+
 export const NODE_COLORS = {
   transform: "var(--color-node-transform)",
   retrieve: "var(--color-node-retrieve)",

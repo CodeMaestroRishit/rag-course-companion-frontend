@@ -1,11 +1,13 @@
 import { useState } from "react";
-import { Check, Copy, Clock, FileText } from "lucide-react";
-import { formatTimestamp, CATEGORY_COLORS } from "../lib/format";
+import { Check, Copy, Clock, FileText, ChevronDown } from "lucide-react";
+import { formatTimestamp, CATEGORY_COLORS, CATEGORY_EMOJI } from "../lib/format";
 
-/** Normalized clip shape: { lessonName, startTime, endTime, category, confidence?, reason, sourceType? } */
+/** Normalized clip shape: { lessonName, startTime, endTime, category, confidence?, reason, sourceType?, sourceText? } */
 export default function ClipCard({ clip }) {
   const [copied, setCopied] = useState(false);
+  const [sourceOpen, setSourceOpen] = useState(false);
   const color = CATEGORY_COLORS[clip.category] || CATEGORY_COLORS.none;
+  const emoji = CATEGORY_EMOJI[clip.category] || CATEGORY_EMOJI.none;
   const isPdf = clip.sourceType === "pdf";
   const range = isPdf ? `p. ${clip.startTime}` : `${formatTimestamp(clip.startTime)}-${formatTimestamp(clip.endTime)}`;
   const copyLabel = isPdf ? "Copy page" : "Copy timestamp";
@@ -21,14 +23,18 @@ export default function ClipCard({ clip }) {
   }
 
   return (
-    <div className="flex flex-col gap-2 rounded-lg border border-border bg-surface p-4">
+    <div
+      className="flex flex-col gap-2 rounded-lg border border-border bg-surface p-4"
+      style={{ borderLeft: `3px solid ${color}` }}
+    >
       <div className="flex items-start justify-between gap-2">
         <p className="text-sm font-medium text-ink">{clip.lessonName}</p>
         <span
-          className="shrink-0 rounded px-1.5 py-0.5 text-[11px] font-semibold tracking-wide uppercase"
+          className="flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold tracking-wide"
           style={{ color, backgroundColor: `${color}22` }}
         >
-          {clip.category}
+          <span aria-hidden>{emoji}</span>
+          {clip.category.toUpperCase()}
           {clip.confidence !== undefined ? ` · ${clip.confidence}/10` : ""}
         </span>
       </div>
@@ -48,6 +54,25 @@ export default function ClipCard({ clip }) {
           {copied ? "Copied" : copyLabel}
         </button>
       </div>
+
+      {clip.sourceText && (
+        <>
+          <button
+            onClick={() => setSourceOpen((o) => !o)}
+            className={`flex items-center gap-1 text-xs font-medium transition-colors ${
+              sourceOpen ? "text-accent" : "text-ink-faint hover:text-accent"
+            }`}
+          >
+            {sourceOpen ? "Hide source passage" : "View source passage"}
+            <ChevronDown size={12} className={`transition-transform ${sourceOpen ? "rotate-180" : ""}`} />
+          </button>
+          {sourceOpen && (
+            <blockquote className="line-clamp-6 border-l-2 border-border bg-surface-raised p-2.5 text-xs text-ink-muted">
+              {clip.sourceText}
+            </blockquote>
+          )}
+        </>
+      )}
     </div>
   );
 }

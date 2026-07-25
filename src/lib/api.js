@@ -18,6 +18,12 @@ export async function postQuery(query) {
   return parseErrorOr(res);
 }
 
+/** GET /sources -> { sourceId, lessonName, sourceType, chunkCount }[] */
+export async function getSources() {
+  const res = await fetch(`${BASE_URL}/sources`);
+  return parseErrorOr(res);
+}
+
 /** GET /clips?category=&minConfidence=&limit= -> ChunkMetadata[] */
 export async function getClips({ category, minConfidence, limit } = {}) {
   const params = new URLSearchParams();

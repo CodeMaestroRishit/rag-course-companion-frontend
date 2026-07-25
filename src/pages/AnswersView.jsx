@@ -18,8 +18,8 @@ export default function AnswersView({ command, onHistoryEntry }) {
     setTurns((prev) => [...prev, { id, query, loading: true }]);
 
     try {
-      const { response, trace } = await postQuery(query);
-      setTurns((prev) => prev.map((t) => (t.id === id ? { ...t, loading: false, response, trace } : t)));
+      const { response, trace, sources } = await postQuery(query);
+      setTurns((prev) => prev.map((t) => (t.id === id ? { ...t, loading: false, response, trace, sources } : t)));
       setActiveTraceTurnId(id);
       onHistoryEntry({ id, type: "answer", query, timestamp: Date.now(), response, trace });
     } catch (err) {

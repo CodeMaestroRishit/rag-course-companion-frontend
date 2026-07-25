@@ -4,7 +4,7 @@ import ClipCard from "../components/ClipCard";
 import QueryInput from "../components/QueryInput";
 import TraceViewer from "../components/TraceViewer";
 import { getClips, searchClips } from "../lib/api";
-import { CATEGORIES } from "../lib/format";
+import { CATEGORIES, CATEGORY_COLORS, CATEGORY_EMOJI } from "../lib/format";
 
 function normalizeBrowseClip(c) {
   return {
@@ -27,6 +27,7 @@ function normalizeSearchClip(c) {
     confidence: undefined,
     reason: c.pitch,
     sourceType: c.sourceType,
+    sourceText: c.sourceText,
   };
 }
 
@@ -112,21 +113,40 @@ export default function ClipsView({ command, onHistoryEntry }) {
         {mode === "browse" ? (
           <>
             <div className="flex flex-wrap items-end gap-4 border-b border-border-soft px-4 py-3">
-              <label className="flex flex-col gap-1 text-xs text-ink-muted">
+              <div className="flex flex-col gap-1.5 text-xs text-ink-muted">
                 Category
-                <select
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  className="rounded-md border border-border bg-surface-raised px-2 py-1.5 text-sm text-ink outline-none"
-                >
-                  <option value="all">All</option>
-                  {CATEGORIES.map((c) => (
-                    <option key={c} value={c}>
-                      {c[0].toUpperCase() + c.slice(1)}
-                    </option>
-                  ))}
-                </select>
-              </label>
+                <div className="flex flex-wrap gap-1.5">
+                  <button
+                    onClick={() => setCategory("all")}
+                    className={`rounded-full border px-2.5 py-1 text-xs font-semibold transition-colors ${
+                      category === "all"
+                        ? "border-accent-border bg-accent-soft text-accent"
+                        : "border-border text-ink-muted hover:text-ink"
+                    }`}
+                  >
+                    All
+                  </button>
+                  {CATEGORIES.map((c) => {
+                    const color = CATEGORY_COLORS[c];
+                    const active = category === c;
+                    return (
+                      <button
+                        key={c}
+                        onClick={() => setCategory(c)}
+                        className="flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-semibold tracking-wide transition-opacity"
+                        style={
+                          active
+                            ? { color, backgroundColor: `${color}22`, borderColor: `${color}66` }
+                            : { color: "var(--color-ink-faint)", borderColor: "var(--color-border)" }
+                        }
+                      >
+                        <span aria-hidden>{CATEGORY_EMOJI[c]}</span>
+                        {c[0].toUpperCase() + c.slice(1)}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
 
               <label className="flex flex-col gap-1 text-xs text-ink-muted">
                 Min confidence: <span className="text-ink">{minConfidence}</span>

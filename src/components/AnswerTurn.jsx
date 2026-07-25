@@ -46,6 +46,7 @@ export default function AnswerTurn({ turn, onViewTrace, isActiveTrace }) {
                 {turn.trace && (
                   <button
                     onClick={() => onViewTrace(turn)}
+                    title="See how this answer was generated: query transform, retrieval, reranking, grading, and any retries"
                     className={`flex items-center gap-1 text-xs font-medium transition-colors ${
                       isActiveTrace ? "text-accent" : "text-ink-faint hover:text-accent"
                     }`}

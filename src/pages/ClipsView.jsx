@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Loader2, AlertCircle, Zap, ListFilter, Search } from "lucide-react";
+import { Loader2, AlertCircle, Zap, ListFilter, Search, Info, X } from "lucide-react";
 import ClipCard from "../components/ClipCard";
 import QueryInput from "../components/QueryInput";
 import TraceViewer from "../components/TraceViewer";
@@ -33,6 +33,7 @@ function normalizeSearchClip(c) {
 
 export default function ClipsView({ command, onHistoryEntry }) {
   const [mode, setMode] = useState("browse"); // "browse" | "search"
+  const [infoOpen, setInfoOpen] = useState(true);
 
   // Browse mode state
   const [category, setCategory] = useState("all");
@@ -109,6 +110,25 @@ export default function ClipsView({ command, onHistoryEntry }) {
             Search
           </button>
         </div>
+
+        {infoOpen && (
+          <div className="mx-4 mt-3 flex items-start gap-2.5 rounded-lg border border-accent-border bg-accent-soft px-3.5 py-3 text-sm text-ink">
+            <Info size={16} className="mt-0.5 shrink-0 text-accent" />
+            <p className="flex-1">
+              <strong className="text-accent">Clip Finder:</strong> find clip-worthy moments in your ingested
+              lessons. <strong>Browse</strong> filters everything already tagged funny, insightful, controversial,
+              emotional, or informative by a confidence score. <strong>Search</strong> describes a moment in plain
+              language (e.g. "something funny about job interviews") and returns the single best match with an
+              exact timestamp - ready to clip and repurpose.
+            </p>
+            <button
+              onClick={() => setInfoOpen(false)}
+              className="shrink-0 rounded p-1 text-ink-faint transition-colors hover:bg-surface hover:text-ink"
+            >
+              <X size={14} />
+            </button>
+          </div>
+        )}
 
         {mode === "browse" ? (
           <>
@@ -210,10 +230,15 @@ export default function ClipsView({ command, onHistoryEntry }) {
                   <ClipCard clip={normalizeSearchClip(searchResult)} />
                   <button
                     onClick={() => setTraceOpen((o) => !o)}
-                    className="mt-2 flex items-center gap-1 text-xs font-medium text-ink-faint transition-colors hover:text-accent"
+                    title="See how this clip was picked: query transform, retrieval, reranking, grading, and any retries"
+                    className={`mt-3 flex items-center gap-1.5 rounded-full border-2 px-3 py-1.5 text-xs font-bold transition-all ${
+                      traceOpen
+                        ? "border-accent bg-accent text-on-accent shadow-md"
+                        : "border-accent-border bg-accent-soft text-accent hover:shadow-md"
+                    }`}
                   >
-                    <Zap size={12} />
-                    {traceOpen ? "Hide reasoning trace" : "View reasoning trace"}
+                    <Zap size={13} />
+                    {traceOpen ? "Hide trace" : "Show trace"}
                   </button>
                 </div>
               )}

@@ -47,15 +47,16 @@ export default function AnswersView({ command, onHistoryEntry }) {
           <p className="text-sm text-ink-faint">Ask a question about the ingested lessons.</p>
           <button
             onClick={() => setTraceOpen((o) => !o)}
-            className={`flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs font-medium transition-colors ${
+            title="See how this answer was generated: query transform, retrieval, reranking, grading, and any retries"
+            className={`flex items-center gap-1.5 rounded-full border-2 px-3 py-1.5 text-xs font-bold transition-all ${
               traceOpen
-                ? "border-accent-border bg-accent-soft text-accent"
+                ? "border-accent bg-accent text-on-accent shadow-md"
                 : traceReadyUnseen
-                  ? "border-accent-border bg-accent-soft text-accent shine"
-                  : "border-border text-ink-muted hover:text-ink"
+                  ? "border-accent bg-accent-soft text-accent shine"
+                  : "border-accent-border bg-accent-soft text-accent hover:shadow-md"
             }`}
           >
-            <Zap size={13} />
+            <Zap size={14} />
             {traceOpen ? "Hide trace" : "Show trace"}
           </button>
         </div>

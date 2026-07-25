@@ -4,7 +4,7 @@ import { uploadVttSource, uploadPdfSource, ingestYoutubeSource } from "../lib/ap
 
 const SOURCE_TYPES = [
   { id: "pdf", label: "PDF", icon: FileText, live: true },
-  { id: "yt", label: "YouTube Link", icon: SquarePlay, live: false },
+  { id: "yt", label: "YouTube Link", icon: SquarePlay, live: true },
   { id: "web", label: "Web Link", icon: Globe, live: false },
   { id: "text", label: "Text", icon: Type, live: false },
   { id: "vtt", label: "VTT / SRT", icon: Captions, live: true },

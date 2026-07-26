@@ -37,11 +37,11 @@ export const NODE_COLORS = {
 };
 
 /**
- * Pull `(Lesson Name, mm:ss)` or `(Doc Name, p. 4)`-style citations out of
- * free-form answer text. The backend's prompt asks for one of these two
- * exact shapes but doesn't enforce it via structured output, so this is
- * deliberately tolerant of minor variations (extra quotes, "Lesson:"
- * prefixes, two timestamps joined by "and").
+ * Pull `(Lesson Name, mm:ss)`, `(Doc Name, p. 4)`, or `(Doc Name, §3)`-style
+ * citations out of free-form answer text. The backend's prompt asks for one
+ * of these three exact shapes but doesn't enforce it via structured output,
+ * so this is deliberately tolerant of minor variations (extra quotes,
+ * "Lesson:" prefixes, two timestamps joined by "and").
  */
 export function extractCitations(text) {
   if (!text) return [];
@@ -52,11 +52,13 @@ export function extractCitations(text) {
     const inner = match[1];
     const timestamps = [...inner.matchAll(/\d{1,2}:\d{2}/g)].map((m) => m[0]);
     const pages = [...inner.matchAll(/\bp(?:age|g)?\.?\s?(\d+)\b/gi)].map((m) => `p. ${m[1]}`);
-    const locators = [...timestamps, ...pages];
+    const sections = [...inner.matchAll(/§\s?(\d+)/g)].map((m) => `§${m[1]}`);
+    const locators = [...timestamps, ...pages, ...sections];
     if (locators.length === 0) continue;
     const lessonName = inner
       .replace(/\d{1,2}:\d{2}(-\d{1,2}:\d{2})?/g, "")
       .replace(/\bp(?:age|g)?\.?\s?\d+\b/gi, "")
+      .replace(/§\s?\d+/g, "")
       .replace(/\band\b/gi, "")
       .replace(/^lesson:?\s*/i, "")
       .replace(/["“”]/g, "")

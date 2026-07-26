@@ -1,7 +1,14 @@
 import { useState } from "react";
-import { Zap, Loader2, AlertCircle, Library, ChevronDown, Clock, FileText } from "lucide-react";
+import { Zap, Loader2, AlertCircle, Library, ChevronDown, Clock, FileText, Hash, SquarePlay } from "lucide-react";
 import CitationPill from "./CitationPill";
 import { extractCitations } from "../lib/format";
+
+function sourceIcon(sourceType) {
+  if (sourceType === "pdf") return FileText;
+  if (sourceType === "text" || sourceType === "web") return Hash;
+  if (sourceType === "youtube") return SquarePlay;
+  return Clock;
+}
 
 export default function AnswerTurn({ turn, onViewTrace, isActiveTrace }) {
   const [sourcesOpen, setSourcesOpen] = useState(false);
@@ -72,12 +79,27 @@ export default function AnswerTurn({ turn, onViewTrace, isActiveTrace }) {
               {sourcesOpen && sources.length > 0 && (
                 <div className="mt-2 flex flex-col gap-2">
                   {sources.map((s, i) => {
-                    const Icon = s.sourceType === "pdf" ? FileText : Clock;
+                    const Icon = sourceIcon(s.sourceType);
+                    const youtubeUrl = s.youtubeVideoId
+                      ? `https://www.youtube.com/watch?v=${s.youtubeVideoId}&t=${Math.floor(s.startTime ?? 0)}s`
+                      : null;
                     return (
                       <div key={i} className="rounded-md border border-border-soft bg-surface-raised p-2.5">
-                        <div className="mb-1 flex items-center gap-1.5 text-xs font-medium text-accent">
-                          <Icon size={11} />
-                          {s.lessonName} · {s.locator}
+                        <div className="mb-1 flex items-center justify-between gap-2">
+                          <div className="flex items-center gap-1.5 text-xs font-medium text-accent">
+                            <Icon size={11} />
+                            {s.lessonName} · {s.locator}
+                          </div>
+                          {youtubeUrl && (
+                            <a
+                              href={youtubeUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="shrink-0 text-xs font-medium text-accent underline underline-offset-2 hover:opacity-80"
+                            >
+                              Watch ↗
+                            </a>
+                          )}
                         </div>
                         <blockquote className="line-clamp-4 border-l-2 border-border pl-2 text-xs text-ink-muted">
                           {s.text}

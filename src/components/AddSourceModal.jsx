@@ -1,12 +1,18 @@
 import { useState } from "react";
 import { X, FileText, SquarePlay, Globe, Type, Captions, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
-import { uploadVttSource, uploadPdfSource, ingestYoutubeSource } from "../lib/api";
+import {
+  uploadVttSource,
+  uploadPdfSource,
+  ingestYoutubeSource,
+  ingestTextSource,
+  ingestWebSource,
+} from "../lib/api";
 
 const SOURCE_TYPES = [
   { id: "pdf", label: "PDF", icon: FileText, live: true },
   { id: "yt", label: "YouTube Link", icon: SquarePlay, live: true },
-  { id: "web", label: "Web Link", icon: Globe, live: false },
-  { id: "text", label: "Text", icon: Type, live: false },
+  { id: "web", label: "Web Link", icon: Globe, live: true },
+  { id: "text", label: "Text", icon: Type, live: true },
   { id: "vtt", label: "VTT / SRT", icon: Captions, live: true },
 ];
 
@@ -16,7 +22,8 @@ function StatusBanner({ status }) {
     return (
       <div className="mt-4 flex items-center gap-2 rounded-lg border border-border-soft bg-canvas p-3 text-sm text-ink-muted">
         <Loader2 size={14} className="animate-spin" />
-        Ingesting - this classifies every chunk with an LLM call, so it can take a while for longer sources…
+        {status.stage === "uploading" ? "Uploading…" : "Indexing"} - this classifies every chunk with an LLM
+        call, so it can take a while for longer sources…
       </div>
     );
   }
@@ -175,6 +182,100 @@ function YoutubeForm({ onIngested }) {
   );
 }
 
+function TextForm({ onIngested }) {
+  const [text, setText] = useState("");
+  const [lessonName, setLessonName] = useState("");
+  const [status, setStatus] = useState(null);
+
+  async function submit() {
+    if (!text.trim() || !lessonName.trim()) return;
+    setStatus({ state: "loading", stage: "indexing" });
+    try {
+      const result = await ingestTextSource(text.trim(), lessonName.trim());
+      setStatus({ state: "success", chunksIngested: result.chunksIngested });
+      onIngested();
+    } catch (err) {
+      setStatus({ state: "error", message: err.message });
+    }
+  }
+
+  return (
+    <div className="mt-4 flex flex-col gap-2">
+      <textarea
+        rows={6}
+        placeholder="Paste your text here…"
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        className="resize-y rounded-lg border border-border bg-surface-raised px-3 py-2 text-sm text-ink placeholder-ink-faint outline-none focus:border-accent-border"
+      />
+      <input
+        type="text"
+        placeholder="Source name"
+        value={lessonName}
+        onChange={(e) => setLessonName(e.target.value)}
+        className="rounded-lg border border-border bg-surface-raised px-3 py-2 text-sm text-ink placeholder-ink-faint outline-none focus:border-accent-border"
+      />
+      <button
+        onClick={submit}
+        disabled={!text.trim() || !lessonName.trim() || status?.state === "loading"}
+        className="rounded-lg bg-accent px-3 py-2 text-sm font-medium text-on-accent transition-opacity disabled:opacity-40"
+      >
+        Ingest text
+      </button>
+      <p className="text-xs text-ink-faint">Split into ~800-character sections, cited as "§N" instead of a timestamp.</p>
+      <StatusBanner status={status} />
+    </div>
+  );
+}
+
+function WebForm({ onIngested }) {
+  const [url, setUrl] = useState("");
+  const [lessonName, setLessonName] = useState("");
+  const [status, setStatus] = useState(null);
+
+  async function submit() {
+    if (!url.trim()) return;
+    setStatus({ state: "loading", stage: "uploading" });
+    try {
+      const result = await ingestWebSource(url.trim(), lessonName.trim() || undefined);
+      setStatus({ state: "success", chunksIngested: result.chunksIngested });
+      onIngested();
+    } catch (err) {
+      setStatus({ state: "error", message: err.message });
+    }
+  }
+
+  return (
+    <div className="mt-4 flex flex-col gap-2">
+      <input
+        type="text"
+        placeholder="https://example.com/article"
+        value={url}
+        onChange={(e) => setUrl(e.target.value)}
+        className="rounded-lg border border-border bg-surface-raised px-3 py-2 text-sm text-ink placeholder-ink-faint outline-none focus:border-accent-border"
+      />
+      <input
+        type="text"
+        placeholder="Source name (optional)"
+        value={lessonName}
+        onChange={(e) => setLessonName(e.target.value)}
+        className="rounded-lg border border-border bg-surface-raised px-3 py-2 text-sm text-ink placeholder-ink-faint outline-none focus:border-accent-border"
+      />
+      <button
+        onClick={submit}
+        disabled={!url.trim() || status?.state === "loading"}
+        className="rounded-lg bg-accent px-3 py-2 text-sm font-medium text-on-accent transition-opacity disabled:opacity-40"
+      >
+        Ingest web page
+      </button>
+      <p className="text-xs text-ink-faint">
+        Fetches and reads the page's text - won't work well on pages that need JavaScript to render content.
+      </p>
+      <StatusBanner status={status} />
+    </div>
+  );
+}
+
 export default function AddSourceModal({ onClose, onIngested }) {
   const [selected, setSelected] = useState(null);
   const selectedType = SOURCE_TYPES.find((s) => s.id === selected);
@@ -218,6 +319,8 @@ export default function AddSourceModal({ onClose, onIngested }) {
         {selected === "vtt" && <VttForm onIngested={onIngested} />}
         {selected === "pdf" && <PdfForm onIngested={onIngested} />}
         {selected === "yt" && selectedType.live && <YoutubeForm onIngested={onIngested} />}
+        {selected === "text" && <TextForm onIngested={onIngested} />}
+        {selected === "web" && <WebForm onIngested={onIngested} />}
       </div>
     </div>
   );

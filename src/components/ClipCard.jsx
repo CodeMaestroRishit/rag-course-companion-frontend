@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Check, Copy, Clock, FileText, ChevronDown } from "lucide-react";
+import { Check, Copy, Clock, FileText, Hash, ChevronDown } from "lucide-react";
 import { formatTimestamp, CATEGORY_COLORS, CATEGORY_EMOJI } from "../lib/format";
 
 /** Normalized clip shape: { lessonName, startTime, endTime, category, confidence?, reason, sourceType?, sourceText? } */
@@ -9,8 +9,14 @@ export default function ClipCard({ clip }) {
   const color = CATEGORY_COLORS[clip.category] || CATEGORY_COLORS.none;
   const emoji = CATEGORY_EMOJI[clip.category] || CATEGORY_EMOJI.none;
   const isPdf = clip.sourceType === "pdf";
-  const range = isPdf ? `p. ${clip.startTime}` : `${formatTimestamp(clip.startTime)}-${formatTimestamp(clip.endTime)}`;
-  const copyLabel = isPdf ? "Copy page" : "Copy timestamp";
+  const isTextOrWeb = clip.sourceType === "text" || clip.sourceType === "web";
+  const range = isPdf
+    ? `p. ${clip.startTime}`
+    : isTextOrWeb
+      ? `§${clip.startTime}`
+      : `${formatTimestamp(clip.startTime)}-${formatTimestamp(clip.endTime)}`;
+  const RangeIcon = isPdf ? FileText : isTextOrWeb ? Hash : Clock;
+  const copyLabel = isPdf ? "Copy page" : isTextOrWeb ? "Copy section" : "Copy timestamp";
 
   async function copyRange() {
     try {
@@ -45,7 +51,7 @@ export default function ClipCard({ clip }) {
 
       <div className="mt-1 flex items-center justify-between">
         <span className="flex items-center gap-1.5 text-xs font-medium text-ink-faint">
-          {isPdf ? <FileText size={13} /> : <Clock size={13} />}
+          <RangeIcon size={13} />
           {range}
         </span>
         <button

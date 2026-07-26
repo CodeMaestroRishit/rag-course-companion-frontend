@@ -77,3 +77,23 @@ export async function ingestYoutubeSource(url, lessonName) {
   });
   return parseErrorOr(res);
 }
+
+/** POST /sources/text { text, lessonName } -> { success, sourceId, chunksIngested } */
+export async function ingestTextSource(text, lessonName) {
+  const res = await fetch(`${BASE_URL}/sources/text`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ text, lessonName }),
+  });
+  return parseErrorOr(res);
+}
+
+/** POST /sources/web { url, lessonName } -> { success, sourceId, chunksIngested, lessonName } */
+export async function ingestWebSource(url, lessonName) {
+  const res = await fetch(`${BASE_URL}/sources/web`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ url, lessonName }),
+  });
+  return parseErrorOr(res);
+}

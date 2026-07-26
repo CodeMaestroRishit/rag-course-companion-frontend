@@ -3,9 +3,16 @@ import { Zap } from "lucide-react";
 import AnswerTurn from "../components/AnswerTurn";
 import QueryInput from "../components/QueryInput";
 import TraceViewer from "../components/TraceViewer";
+import Logo from "../components/Logo";
 import { postQuery } from "../lib/api";
 
 let turnIdCounter = 0;
+
+const EXAMPLE_QUESTIONS = [
+  "What is the difference between React Native and Expo?",
+  "Summarize the key ideas from my sources",
+  "What's something insightful I've saved?",
+];
 
 export default function AnswersView({ command, onHistoryEntry }) {
   const [turns, setTurns] = useState([]);
@@ -63,11 +70,25 @@ export default function AnswersView({ command, onHistoryEntry }) {
 
         <div ref={scrollRef} className="flex-1 space-y-4 overflow-y-auto px-4 py-4">
           {turns.length === 0 && (
-            <div className="flex h-full flex-col items-center justify-center gap-2 text-center text-ink-faint">
-              <p className="text-sm">No questions yet.</p>
-              <p className="text-xs">
-                Try: "What is the difference between React Native and Expo?"
-              </p>
+            <div className="flex h-full flex-col items-center justify-center gap-4 text-center">
+              <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-accent-soft">
+                <Logo size={36} className="text-accent" />
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold text-ink">Welcome to SeekPoint</h2>
+                <p className="mt-1 text-ink-faint">Find the exact moment. Ask anything about your sources.</p>
+              </div>
+              <div className="mt-2 flex max-w-lg flex-wrap justify-center gap-2">
+                {EXAMPLE_QUESTIONS.map((q) => (
+                  <button
+                    key={q}
+                    onClick={() => runQuery(q)}
+                    className="rounded-full border border-border-soft bg-surface-raised px-3.5 py-2 text-sm text-ink-muted transition-colors hover:border-accent-border hover:text-accent"
+                  >
+                    {q}
+                  </button>
+                ))}
+              </div>
             </div>
           )}
           {turns.map((turn) => (

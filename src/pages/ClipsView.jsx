@@ -115,11 +115,13 @@ export default function ClipsView({ command, onHistoryEntry }) {
           <div className="mx-4 mt-3 flex items-start gap-2.5 rounded-lg border border-accent-border bg-accent-soft px-3.5 py-3 text-sm text-ink">
             <Info size={16} className="mt-0.5 shrink-0 text-accent" />
             <p className="flex-1">
-              <strong className="text-accent">Clip Finder:</strong> find clip-worthy moments in your ingested
-              lessons. <strong>Browse</strong> filters everything already tagged funny, insightful, controversial,
-              emotional, or informative by a confidence score. <strong>Search</strong> describes a moment in plain
-              language (e.g. "something funny about job interviews") and returns the single best match with an
-              exact timestamp - ready to clip and repurpose.
+              <strong className="text-accent">Clip Finder for creators:</strong> stop scrubbing through hours of
+              footage looking for the good part - every source is automatically scanned for its most shareable
+              moments (funny, insightful, controversial, emotional) so you can go straight to what's worth
+              cutting into a short, reel, or highlight. <strong>Browse</strong> lists everything already tagged,
+              filterable by category and confidence. <strong>Search</strong> takes a plain-language request (e.g.
+              "something funny about job interviews") and hands back one best-match clip with the exact timestamp
+              to cut at - no re-watching required.
             </p>
             <button
               onClick={() => setInfoOpen(false)}
@@ -223,7 +225,20 @@ export default function ClipsView({ command, onHistoryEntry }) {
                 </div>
               )}
               {!searchLoading && !searchError && !searchResult && (
-                <p className="text-sm text-ink-faint">Describe the kind of moment you're looking for.</p>
+                <div className="flex flex-col items-center justify-center gap-3 py-10 text-center">
+                  <p className="text-sm text-ink-faint">Describe the kind of moment you're looking for.</p>
+                  <div className="flex max-w-lg flex-wrap justify-center gap-2">
+                    {["Something funny", "A controversial opinion", "A memorable analogy"].map((q) => (
+                      <button
+                        key={q}
+                        onClick={() => runSearch(q)}
+                        className="rounded-full border border-border-soft bg-surface-raised px-3.5 py-2 text-sm text-ink-muted transition-colors hover:border-accent-border hover:text-accent"
+                      >
+                        {q}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               )}
               {searchResult && (
                 <div className="max-w-lg">
